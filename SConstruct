@@ -33,8 +33,9 @@ env = SConscript("godot-cpp/SConstruct", {"env": env, "customs": customs})
 env.Append(CPPPATH=["src/", "include/"])
 sources = Glob("src/*.cpp")
 
-#env.Append(LIBS=["NatNetLib"])
-#env.Append(LIBPATH=["lib/NatNet/"])
+env.Append(LIBS=["advapi32", "user32", "kernel32"])
+env.Append(CXXFLAGS=["/DUNICODE"])
+
 
 if env["target"] in ["editor", "template_debug"]:
     try:
