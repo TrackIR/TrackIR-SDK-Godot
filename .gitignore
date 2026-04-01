@@ -49,6 +49,8 @@ x86/
 [Aa][Rr][Mm]64/
 bld/
 [Bb]in/
+# DLL file for plugin
+!example-project/addons/trackir_plugin/bin/
 [Oo]bj/
 [Ll]og/
 [Ll]ogs/
