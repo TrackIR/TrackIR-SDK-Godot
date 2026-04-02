@@ -50,15 +50,24 @@ suffix = env['suffix'].replace(".dev", "").replace(".universal", "")
 
 lib_filename = "{}{}{}{}".format(env.subst('$SHLIBPREFIX'), libname, suffix, env.subst('$SHLIBSUFFIX'))
 
-# put compiled binaries in bin/
+# put compiled binaries in trackir_plugin/bin/
 library = env.SharedLibrary(
-    "bin/{}".format(lib_filename),
+    "trackir_plugin/bin/{}".format(lib_filename),
     source=sources,
 )
 
 
 # copy .dll files etc. into addons/ folder
-copy = env.Install("{}/addons/trackir_plugin/{}/".format(projectdir, "bin"), library)
+copy_dll = env.Install("{}/addons/trackir_plugin/bin/".format(projectdir), library)
 
-default_args = [library, copy]
+# get list of all files (except for bin/ folder) from example-project/addons/trackir_plugin/ 
+filenames = []
+for file in os.listdir("{}/addons/trackir_plugin".format(projectdir)):
+    if file != "bin":
+        filenames.append("{}/addons/trackir_plugin/".format(projectdir) + file)
+
+# copy files to trackir_plugin/
+copy_plugin = env.Install("trackir_plugin", filenames)
+
+default_args = [library, copy_dll, copy_plugin]
 Default(*default_args)

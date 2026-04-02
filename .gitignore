@@ -51,6 +51,7 @@ bld/
 [Bb]in/
 # DLL file for plugin
 !example-project/addons/trackir_plugin/bin/
+!trackir_plugin/bin/
 [Oo]bj/
 [Ll]og/
 [Ll]ogs/
