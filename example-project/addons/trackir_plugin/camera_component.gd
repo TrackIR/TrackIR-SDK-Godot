@@ -56,5 +56,5 @@ func _process(delta: float) -> void:
 		
 		if stale_data_duration > tracking_lost_timeout:
 			# interpolate between last transform and identity transform
-			var recenter_fraction = min((stale_data_duration - tracking_lost_timeout) / tracking_lost_timeout, 1.0)
+			var recenter_fraction = min((stale_data_duration - tracking_lost_timeout) / recenter_time, 1.0)
 			transform = pose.interpolate_with(Transform3D.IDENTITY, recenter_fraction)
