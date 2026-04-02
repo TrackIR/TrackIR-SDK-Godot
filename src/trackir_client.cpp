@@ -17,9 +17,8 @@ using namespace godot;
 /// Registry location for locating NPClient.dll
 std::wstring dLLRegKeyLoc = L"Software\\NaturalPoint\\NATURALPOINT\\NPClient Location\\";
 
-// Helper function declarations
+// Helper function declaration
 std::wstring FindDllLocation(std::wstring regKeyLoc);
-HWND GetWindowHwnd();
 
 
 // This function registers the class's methods with the Godot engine so that 
@@ -56,46 +55,35 @@ TrackIRClient::~TrackIRClient() {
 }
 
 
+// Initialize a connection to TrackIR software
 void TrackIRClient::_enter_tree() {
-	print_line("TrackIR plugin initializing");
+	print_line("TrackIR plugin initializing...");
 	connected = false;
 
 	// Search registry for DLL location
 	std::wstring pathToDll = FindDllLocation( dLLRegKeyLoc ) + L"\\";
-	if (pathToDll.find( L"Error" ) == -1) {
-		print_line("Found DLL in " , String(pathToDll.c_str()));
-	}
-	else {
+	if (pathToDll.find( L"Error" ) != -1) {
 		print_line("Error: Cannot find DLL location");
 		return;
 	}
 	
 	// Initialize functions from DLL
 	NPRESULT result = NPClient::NPClient_Init(pathToDll);
-	if (result == NP_OK) {
-		print_line("NPClient interface -- initialize OK.");
-	}
-	else {
+	if (result != NP_OK) {
 		print_line("Error: Could not initialize NPClient interface. Make sure TrackIR is running!");
 		return;
 	}
 
-	// Get the current console window handle
-	HWND handle = GetWindowHwnd();
-	if (handle != nullptr) {
-		print_line("Successfully got console window handle.");
-	}
-	else {
+	// Get the application's window handle
+	HWND handle = GetActiveWindow();
+	if (handle == nullptr) {
 		print_line("Error: Could not retrieve window handle.");
 		return;
 	}
 
 	// Register window handle to communicate between TrackIR and application
 	result = NPClient::NP_RegisterWindowHandle(handle);
-	if (NP_OK == result) {
-		print_line("Window handle registration successful.");
-	}
-	else {
+	if (result != NP_OK) {
 		print_line("Error: Registering window handle failed.");
 		return;
 	}
@@ -103,27 +91,24 @@ void TrackIRClient::_enter_tree() {
 	// Query the NaturalPoint software version
 	unsigned short wNPClientVer;
 	result = NPClient::NP_QueryVersion( &wNPClientVer );
-	if (NP_OK == result) {
+	if (result == NP_OK) {
 		char csMajorVer[250], csMinorVer[250], csVerMsg[250];
 		// right shift by 1 byte to get high byte (major version)
 		sprintf_s(csMajorVer, "%d", ( wNPClientVer >> 8 ) ); 
 		// mask remaining to get the lower byte (minor version)
 		sprintf_s(csMinorVer, "%02d", ( wNPClientVer & 0x00FF ) ); 
-		sprintf_s(csVerMsg, "NaturalPoint software version is %s.%s \n",
+		sprintf_s(csVerMsg, "TrackIR software version is %s.%s",
 			csMajorVer, csMinorVer );
 		print_line(String(csVerMsg));
 	}
 	else {
-		print_line("Error: querying NaturalPoint software version failed");
+		print_line("Error: querying TrackIR software version failed");
 		return;
 	}
 
 	// Register program developer ID provided by NaturalPoint
 	result = NPClient::NP_RegisterProgramProfileID( NP_DEVELOPER_ID );
-	if (result == NP_OK) {
-		print_line("Registered Developer ID");
-	}
-	else {
+	if (result != NP_OK) {
 		print_line("Error: Could not register Developer ID.");
 		return;
 	}
@@ -134,7 +119,7 @@ void TrackIRClient::_enter_tree() {
 	// Tell TrackIR we are ready to receive data
 	result = NPClient::NP_StartDataTransmission();
 	if (result == NP_OK) {
-		print_line("Data transmission started");
+		print_line("Initialization complete. Data transmission started.");
 	}
 	else {
 		print_line("Error: starting data transmission failed");
@@ -226,14 +211,7 @@ std::wstring FindDllLocation(std::wstring regKeyLoc)
 	LONG lresult = RegOpenKeyEx( HKEY_CURRENT_USER, (LPCTSTR) regKeyLoc.c_str(), 0, KEY_READ | KEY_WOW64_64KEY, &pKey);
 	if (lresult != ERROR_SUCCESS) {
 		//error condition
-		if (lresult == ERROR_FILE_NOT_FOUND) {
-			print_line("RegOpenKeyEx error: file not found");
-
-		}
-		else if (lresult == ERROR_BAD_PATHNAME) {
-			print_line("RegOpenKeyEx error: bad pathname");
-		}
-		return L"Error: DLL Location key not present\n";
+		return L"Error: Unable to open DLL location registry key";
 	}
 
 	//get the value from the key
@@ -256,22 +234,4 @@ std::wstring FindDllLocation(std::wstring regKeyLoc)
 	}
 	RegCloseKey( pKey );
 	return L"Error";
-}
-
-
-// Gets the window handle for the process so that TrackIR can send data
-HWND GetWindowHwnd() {
-	// Window handle to return
-	HWND hwndFound;
-	
-	// It might be possible that the active window is not the window we want to
-	// register, so this might not be the best way to do things.
-	hwndFound = GetActiveWindow();
-
-	// print the window title (for debugging)
-	wchar_t windowText[1024];
-	GetWindowText(hwndFound, windowText, 1024);
-	print_line("Active Window:", String(windowText));
-
-	return hwndFound;
 }

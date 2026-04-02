@@ -4,9 +4,7 @@
 
 #pragma once
 
-#include "godot_cpp/classes/node.hpp"
-#include "godot_cpp/classes/wrapped.hpp"
-#include "godot_cpp/variant/variant.hpp"
+#include <godot_cpp/classes/node.hpp>
 
 using namespace godot;
 
