@@ -42,7 +42,7 @@ func _process(delta: float) -> void:
 		# get rotation angles from data, convert to Godot's conventions
 		var pitch = deg_to_rad(-1 * data["pitch"])
 		var yaw = deg_to_rad(data["yaw"])
-		var roll = deg_to_rad(-1 * data["roll"])
+		var roll = deg_to_rad(data["roll"])
 		var rotation_angles = Vector3(pitch, yaw, roll)
 		
 		# apply rotations in roll-pitch-yaw order (Z-Y-X)
