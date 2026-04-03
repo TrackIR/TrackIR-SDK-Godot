@@ -6,3 +6,5 @@ The only changes necessary to add TrackIR camera control were:
 - Adding and `addons/` folder and installing the `trackir_plugin/` in it.
 - Enabling the plugin in the Project Settings
 - Duplicating the Camera3D node in the player scene, making it a child of the original and attaching the `trackir_camera_control.gd` script to it. Setting the "Current" property of the child Camera3D in the inspector and unchecking this property on the parent Camera3D node.
+
+Use **WASD** or the arrow keys to move, **Space** to jump, and **Ctrl** to shoot.
