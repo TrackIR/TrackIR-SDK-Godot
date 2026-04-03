@@ -1,0 +1,76 @@
+[gd_scene load_steps=12 format=3 uid="uid://biv80cjvholgs"]
+
+[ext_resource type="Script" uid="uid://b7ahj6gb3artw" path="res://addons/trackir_plugin/trackir_camera_control.gd" id="1_of074"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_rpkg0"]
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_jjv7d"]
+material = SubResource("StandardMaterial3D_rpkg0")
+size = Vector2(100, 100)
+center_offset = Vector3(0, -2, 0)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_of074"]
+albedo_color = Color(0.27264315, 0.6426787, 0.99999994, 1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_rpkg0"]
+material = SubResource("StandardMaterial3D_of074")
+size = Vector3(5, 5, 5)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_xphyw"]
+albedo_color = Color(0.6627451, 0.6627451, 0.827451, 1)
+
+[sub_resource type="PrismMesh" id="PrismMesh_jbb1j"]
+material = SubResource("StandardMaterial3D_xphyw")
+size = Vector3(6, 2, 6)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_jjv7d"]
+albedo_color = Color(0.42996722, 0.2728466, 0, 1)
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_xphyw"]
+material = SubResource("StandardMaterial3D_jjv7d")
+height = 4.0
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_jbb1j"]
+albedo_color = Color(0, 0.37606376, 0.188368, 1)
+
+[sub_resource type="SphereMesh" id="SphereMesh_pa4tq"]
+material = SubResource("StandardMaterial3D_jbb1j")
+
+[node name="Node3D" type="Node3D"]
+
+[node name="Camera3D" type="Camera3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.0000005, 0)
+script = ExtResource("1_of074")
+max_offset = 2.0
+
+[node name="Environment" type="Node3D" parent="."]
+
+[node name="Ground" type="MeshInstance3D" parent="Environment"]
+mesh = SubResource("PlaneMesh_jjv7d")
+
+[node name="House" type="MeshInstance3D" parent="Environment"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -13, 0, -13)
+mesh = SubResource("BoxMesh_rpkg0")
+
+[node name="Roof" type="MeshInstance3D" parent="Environment/House"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.5, 0)
+mesh = SubResource("PrismMesh_jbb1j")
+
+[node name="Tree" type="MeshInstance3D" parent="Environment"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10, 0, -17)
+mesh = SubResource("CylinderMesh_xphyw")
+
+[node name="TreeTop" type="MeshInstance3D" parent="Environment/Tree"]
+transform = Transform3D(5, 0, 0, 0, 5, 0, 0, 0, 5, 0, 4, 0)
+mesh = SubResource("SphereMesh_pa4tq")
+
+[node name="Lighting" type="Node3D" parent="."]
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="Lighting"]
+transform = Transform3D(0.8660254, 0, -0.5, 0, 1, 0, 0.5, 0, 0.8660254, -11, 5, 9)
+
+[node name="DirectionalLight3D2" type="DirectionalLight3D" parent="Lighting"]
+transform = Transform3D(1, 0, 0, 0, -0.8660254, 0.50000006, 0, -0.50000006, -0.8660254, 0, 16, -47)
+
+[node name="DirectionalLight3D3" type="DirectionalLight3D" parent="Lighting"]
+transform = Transform3D(0.8660254, 0, 0.5, 0, 1, 0, -0.5, 0, 0.8660254, 14, 5, 9)
